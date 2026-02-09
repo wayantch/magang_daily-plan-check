@@ -1,5 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.ops')
 
 @section('content')
-    <div class="">p</div>
+<div class="space-y-4">
+
+</div>
 @endsection

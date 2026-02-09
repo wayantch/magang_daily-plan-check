@@ -30,7 +30,7 @@
                         <th class="px-4 py-3 text-left">#</th>
                         <th class="px-4 py-3 text-left">Equipment</th>
                         <th class="px-4 py-3 text-left">Category</th>
-                        <th class="px-4 py-3 text-left">Room</th>
+                        <th class="px-4 py-3 text-left">Area - Room</th>
                         <th class="px-4 py-3 text-left">Status</th>
                         <th class="px-4 py-3 text-right">Action</th>
                     </tr>

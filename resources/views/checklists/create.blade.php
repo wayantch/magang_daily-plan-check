@@ -1,62 +1,55 @@
-@extends('layouts.app')
+@extends('layouts.ops')
 
 @section('content')
-<div class="max-w-4xl space-y-6">
+<div class="space-y-6 ">
 
-    <x-header title="Daily Plan Check" />
+    <x-header title="Checklist Execution" />
+    <x-alert />
 
-    <form method="POST" action="{{ route('checklist.store') }}"
-          class="bg-card border border-border rounded-xl p-6 space-y-6">
+    <div class="bg-card border border-border rounded-xl p-4">
+        <p class="text-sm text-text-secondary">
+            {{ $template->equipment->room->area->name }} -
+            {{ $template->equipment->room->name }} -
+            {{ $template->equipment->name }}
+        </p>
+        <h2 class="text-lg font-semibold">{{ $template->title }}</h2>
+    </div>
+
+    <form method="POST"
+          action="{{ route('ops.checklists.store', $template) }}"
+          class="space-y-4">
         @csrf
 
-        <!-- Meta -->
-        <div class="grid grid-cols-3 gap-4">
-            <input type="date" name="check_date"
-                   value="{{ now()->toDateString() }}"
-                   class="bg-bg border border-border rounded-lg px-4 py-2">
+        @foreach ($template->items as $item)
+        <div class="bg-card border border-border rounded-xl p-4 space-y-2">
+            <p class="font-medium">{{ $item->heading }}</p>
+            <p class="text-sm text-text-secondary">{{ $item->subheading }}</p>
 
-            <select name="area_id"
-                    class="bg-bg border border-border rounded-lg px-4 py-2">
-                @foreach ($areas as $area)
-                    <option value="{{ $area->id }}">{{ $area->name }}</option>
-                @endforeach
-            </select>
+            <div class="flex gap-6">
+                <label class="flex items-center gap-2">
+                    <input type="radio"
+                           name="items[{{ $item->id }}][status]"
+                           value="fault_free"
+                           required>
+                    Fault Free
+                </label>
 
-            <select name="room_id"
-                    class="bg-bg border border-border rounded-lg px-4 py-2">
-                <option value="">No Room</option>
-            </select>
+                <label class="flex items-center gap-2 text-danger">
+                    <input type="radio"
+                           name="items[{{ $item->id }}][status]"
+                           value="fault">
+                    Fault
+                </label>
+            </div>
+
+            <textarea name="items[{{ $item->id }}][note]"
+                      placeholder="Note (optional)"
+                      class="w-full mt-2 px-3 py-2 bg-bg border border-border rounded-lg"></textarea>
         </div>
-
-        <!-- Equipment List -->
-        <div class="space-y-4">
-            @foreach (\App\Models\Equipment::where('is_active', true)->get() as $index => $equipment)
-                <div class="flex items-center gap-4 border border-border rounded-lg p-4">
-                    <input type="hidden"
-                           name="items[{{ $index }}][equipment_id]"
-                           value="{{ $equipment->id }}">
-
-                    <div class="flex-1 font-medium">
-                        {{ $equipment->name }}
-                    </div>
-
-                    <select name="items[{{ $index }}][condition]"
-                            class="bg-bg border border-border rounded-lg px-3 py-2">
-                        <option value="normal">Normal</option>
-                        <option value="abnormal">Abnormal</option>
-                        <option value="not_working">Not Working</option>
-                    </select>
-
-                    <input type="text"
-                           name="items[{{ $index }}][note]"
-                           placeholder="Note"
-                           class="bg-bg border border-border rounded-lg px-3 py-2 w-64">
-                </div>
-            @endforeach
-        </div>
+        @endforeach
 
         <div class="flex justify-end">
-            <button class="px-6 py-2 rounded-lg bg-primary text-accent-foreground">
+            <button class="px-6 py-2 bg-primary text-accent-foreground rounded-lg">
                 Submit Checklist
             </button>
         </div>

@@ -16,14 +16,23 @@
             'icon' => 'server',
         ],
         [
-            'label' => 'Form',
-            'route' => 'checklists.index',
-            'icon' => 'clipboard-check',
+            'label' => 'Checklist Template',
+            'route' => 'checklist-templates.index',
+            'icon' => 'clipboard-list',
         ],
+        // [
+        //     'label' => 'Form',
+        //     'route' => 'checklists.index',
+        //     'icon' => 'clipboard-check',
+        // ],
     ];
 @endphp
 
-<aside class="w-64 bg-card border-r border-border flex flex-col">
+<aside
+    class="fixed inset-y-0 left-0 w-64
+           bg-card border-r border-border
+           flex flex-col z-40">
+
 
     <!-- Logo -->
     <div class="h-16 flex items-center px-6 border-b border-border">
@@ -80,6 +89,7 @@
                 <i data-lucide="tags" class="w-5 h-5"></i>
                 <span>Category</span>
             </a>
+
         </div>
 
 

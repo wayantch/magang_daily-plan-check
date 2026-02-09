@@ -20,25 +20,26 @@ class AuthController extends Controller
     public function authenticate(Request $request)
     {
         $credentials = $request->validate([
-            'email'    => 'required|email',
-            'password' => 'required'
+            'email' => ['required', 'email'],
+            'password' => ['required'],
         ]);
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            // Redirect by role
+            // 🔥 INI KUNCI
             if (auth()->user()->role === 'admin') {
                 return redirect()->route('dashboard');
             }
 
-            return redirect()->route('checklists.index');
+            return redirect()->route('ops.home');
         }
 
         return back()->withErrors([
-            'email' => 'Email or Password wrong',
+            'email' => 'The provided credentials do not match our records.',
         ]);
     }
+
 
     // Register page (optional)
     public function register()
@@ -59,13 +60,13 @@ class AuthController extends Controller
             'name'      => $data['name'],
             'email'     => $data['email'],
             'password'  => Hash::make($data['password']),
-            'role'      => 'operations', // default
+            'role'      => 'ops', // default
             'is_active' => true
         ]);
 
         return redirect()->route('login')->with('success', 'Account created');
     }
-    
+
 
     // Logout
     public function logout(Request $request)

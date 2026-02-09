@@ -2,22 +2,27 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class ChecklistItem extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
         'checklist_id',
-        'equipment_id',
-        'condition', // normal, abnormal, not_working
+        'checklist_item_template_id',
+        'status',
         'note',
     ];
 
-    public function equipment()
+    public function checklist()
     {
-        return $this->belongsTo(Equipment::class);
+        return $this->belongsTo(Checklist::class);
+    }
+
+    public function templateItem()
+    {
+        return $this->belongsTo(
+            ChecklistItemTemplate::class,
+            'checklist_item_template_id'
+        );
     }
 }

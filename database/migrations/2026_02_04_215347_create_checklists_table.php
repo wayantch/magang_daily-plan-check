@@ -13,12 +13,19 @@ return new class extends Migration
     {
         Schema::create('checklists', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('area_id')->constrained();
-            $table->foreignId('room_id')->nullable()->constrained();
+
+            $table->foreignId('checklist_template_id')
+                ->constrained('checklist_templates')
+                ->cascadeOnDelete();
+
+            $table->foreignId('user_id')
+                ->constrained()
+                ->cascadeOnDelete();
+
             $table->date('check_date');
-            $table->string('status')->default('submitted');
             $table->timestamps();
+
+            $table->unique(['checklist_template_id', 'check_date']);
         });
     }
 

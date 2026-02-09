@@ -48,7 +48,9 @@ class RoomController extends Controller
             ->where('is_active', true)
             ->get();
 
-        return view('rooms.edit', compact('room', 'areas'));
+        $types = Type::where('is_active', true)->get();
+
+        return view('rooms.edit', compact('room', 'areas', 'types'));
     }
 
     public function update(Request $request, Room $room)
@@ -56,7 +58,7 @@ class RoomController extends Controller
         $data = $request->validate([
             'area_id'   => 'required|exists:areas,id',
             'name'      => 'required|string|max:255',
-            'type'      => 'required|in:critical,non-critical',
+            'type_id'      => 'required|exists:types,id',
             'is_active' => 'required|boolean',
         ]);
 

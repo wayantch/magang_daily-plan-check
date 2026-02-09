@@ -4,6 +4,8 @@
 <div class="space-y-6">
 
     <!-- Header -->
+        <x-header title="Manage User" />
+
     <div class="flex items-center justify-between">
         <div>
             <h1 class="text-xl font-semibold text-text-primary">User Management</h1>

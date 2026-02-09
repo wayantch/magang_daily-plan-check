@@ -3,73 +3,75 @@
 namespace App\Http\Controllers;
 
 use App\Models\Checklist;
-use App\Models\ChecklistItem;
-use App\Models\Area;
-use App\Models\Room;
-use App\Models\Equipment;
+use App\Models\ChecklistTemplate;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ChecklistController extends Controller
 {
     public function index()
     {
-        $checklists = Checklist::with(['area', 'room', 'items'])
-            ->latest('check_date')
+        $checklists = Checklist::with([
+            'template.equipment.room.area',
+            'user'
+        ])
+            ->where('user_id', Auth::id())
+            ->latest()
             ->paginate(10);
 
-        return view('checklists.index', compact('checklists'));
+        return view('forms.index', compact('checklists'));
     }
 
-    // User input form
-    public function myIndex()
+    public function create(ChecklistTemplate $template)
     {
-        $checklists = Checklist::with(['area', 'room'])
-            ->where('user_id', auth()->id())
-            ->latest('check_date')
-            ->paginate(10);
+        $template->load('equipment.room.area', 'items');
 
-        return view('checklists.user.index', compact('checklists'));
+        return view('checklists.create', compact('template'));
     }
 
-
-    public function create()
+    public function store(Request $request, ChecklistTemplate $template)
     {
-        $areas = Area::where('is_active', true)->get();
-
-        return view('checklists.create', compact('areas'));
-    }
-
-    public function store(Request $request)
-    {
-        $data = $request->validate([
-            'area_id'                => 'required|exists:areas,id',
-            'room_id'                => 'nullable|exists:rooms,id',
-            'check_date'             => 'required|date',
-            'items'                  => 'required|array',
-            'items.*.equipment_id'   => 'required|exists:equipments,id',
-            'items.*.condition'      => 'required|in:normal,abnormal,not_working',
-            'items.*.note'           => 'nullable|string',
+        $request->validate([
+            'items' => 'required|array',
+            'items.*.status' => 'required|in:fault,fault_free',
+            'items.*.note'   => 'nullable|string',
         ]);
 
         $checklist = Checklist::create([
-            'user_id'   => auth()->id(),
-            'area_id'   => $data['area_id'],
-            'room_id'   => $data['room_id'] ?? null,
-            'check_date' => $data['check_date'],
-            'status'    => 'submitted',
+            'checklist_template_id' => $template->id,
+            'user_id' => Auth::id(),
+            'check_date' => now()->toDateString(),
         ]);
 
-        foreach ($data['items'] as $item) {
-            ChecklistItem::create([
-                'checklist_id' => $checklist->id,
-                'equipment_id' => $item['equipment_id'],
-                'condition'    => $item['condition'],
-                'note'         => $item['note'] ?? null,
+        foreach ($request->items as $templateItemId => $item) {
+            $checklist->items()->create([
+                'checklist_item_template_id' => $templateItemId,
+                'status' => $item['status'],
+                'note' => $item['note'] ?? null,
             ]);
         }
 
         return redirect()
-            ->route('checklist.create')
-            ->with('success', 'Checklist submitted');
+            ->route('ops.home')
+            ->with('success', 'Checklist submitted successfully');
+    }
+
+    public function opsHome()
+    {
+        $today = now()->toDateString();
+
+        $templates = ChecklistTemplate::with('equipment.room.area')
+            ->where('is_active', true)
+            ->orderByDesc('created_at')
+            ->get()
+            ->map(function ($template) use ($today) {
+                $template->is_done_today = $template->checklists()
+                    ->where('check_date', $today)
+                    ->exists();
+
+                return $template;
+            });
+
+        return view('ops.checklists.home', compact('templates'));
     }
 }

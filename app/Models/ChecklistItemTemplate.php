@@ -4,26 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Checklist extends Model
+class ChecklistItemTemplate extends Model
 {
     protected $fillable = [
         'checklist_template_id',
-        'user_id',
-        'check_date',
+        'heading',
+        'subheading',
     ];
 
     public function template()
     {
         return $this->belongsTo(ChecklistTemplate::class, 'checklist_template_id');
-    }
-
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
-
-    public function items()
-    {
-        return $this->hasMany(ChecklistItem::class);
     }
 }

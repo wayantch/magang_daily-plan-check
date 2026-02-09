@@ -14,22 +14,18 @@
 
 <body class="bg-bg text-text-primary antialiased">
 
-<div class="flex min-h-screen">
+<div class="flex min-h-screen bg-bg text-text-primary">
 
     {{-- Sidebar --}}
     @include('components.sidebar')
 
-    {{-- Main Content --}}
-    <div class="flex flex-col flex-1">
+    {{-- Main --}}
+    <main class="ml-64 flex-1 h-screen overflow-y-auto p-6">
+        @yield('content')
+    </main>
 
-
-        {{-- Page Content --}}
-        <main class="flex-1 p-6 overflow-y-auto">
-            @yield('content')
-        </main>
-
-    </div>
 </div>
+
 
 {{-- Profile Dropdown Script --}}
 <script>

@@ -37,4 +37,18 @@ class Equipment extends Model
     {
         return $this->belongsTo(Category::class);
     }
+    // ✅ RELASI KE TEMPLATE
+    public function checklistTemplates()
+    {
+        return $this->hasMany(ChecklistTemplate::class);
+    }
+
+    // ✅ RELASI KE CHECKLIST (LEWAT TEMPLATE)
+    public function checklists()
+    {
+        return $this->hasManyThrough(
+            Checklist::class,
+            ChecklistTemplate::class
+        );
+    }
 }

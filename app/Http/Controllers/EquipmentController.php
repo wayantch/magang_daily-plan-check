@@ -48,17 +48,19 @@ class EquipmentController extends Controller
     {
         $areas = Area::where('is_active', true)->get();
         $rooms = Room::where('is_active', true)->get();
+        $categories = Category::where('is_active', true)->get();
 
-        return view('equipments.edit', compact('equipment', 'areas', 'rooms'));
+        $equipment->load('room.area');
+
+        return view('equipments.edit', compact('equipment', 'areas', 'rooms', 'categories'));
     }
 
     public function update(Request $request, Equipment $equipment)
     {
         $data = $request->validate([
-            'area_id'   => 'required|exists:areas,id',
             'room_id'   => 'nullable|exists:rooms,id',
             'name'      => 'required|string|max:255',
-            'category'  => 'required|string|max:100',
+            'category_id'  => 'required|exists:categories,id',
             'is_active' => 'required|boolean',
         ]);
 

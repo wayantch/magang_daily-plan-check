@@ -22,7 +22,7 @@ class UserSeeder extends Seeder
             'name' => 'Ops Team',
             'email' => 'ops@dc.local',
             'password' => Hash::make('password'),
-            'role' => 'operations',
+            'role' => 'ops',
             'is_active' => true,
         ]);
     }
