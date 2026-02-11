@@ -48,24 +48,28 @@ class AuthController extends Controller
     }
 
     // Register process
-    public function store(Request $request)
-    {
-        $data = $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|email|unique:users',
-            'password' => 'required|min:6|confirmed'
-        ]);
+    // public function store(Request $request)
+    // {
+    //     dd($request->all());
 
-        User::create([
-            'name'      => $data['name'],
-            'email'     => $data['email'],
-            'password'  => Hash::make($data['password']),
-            'role'      => 'ops', // default
-            'is_active' => true
-        ]);
+    //     $data = $request->validate([
+    //         'name'     => 'required|string|max:255',
+    //         'email'    => 'required|email|unique:users',
+    //         'password' => 'required|min:6|confirmed',
+    //         'role'     => 'required|in:admin,ops',
+    //     ]);
 
-        return redirect()->route('login')->with('success', 'Account created');
-    }
+    //     User::create([
+    //         'name'      => $data['name'],
+    //         'email'     => $data['email'],
+    //         'password'  => Hash::make($data['password']),
+    //         'role'      => $data['role'],
+    //         'is_active' => true
+    //     ]);
+
+
+    //     return redirect()->route('login')->with('success', 'Account created');
+    // }
 
 
     // Logout

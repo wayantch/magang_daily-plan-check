@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Checklist;
 use App\Models\ChecklistItem;
+use App\Models\ChecklistTemplate;
 use App\Models\Equipment;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -17,6 +19,15 @@ class DashboardController extends Controller
         $totalEquipments = Equipment::count();
 
         $checkedToday = Checklist::whereDate('created_at', $today)->count();
+
+        $today = Carbon::today();
+
+        $pendingTemplatesToday = ChecklistTemplate::with('equipment.room.area')
+            ->where('is_active', true)
+            ->whereDoesntHave('checklists', function ($q) use ($today) {
+                $q->whereDate('created_at', $today);
+            })
+            ->get();
 
         $faultCount = ChecklistItem::where('status', 'fault')
             ->whereHas(
@@ -53,6 +64,18 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
+        // ✅ RECENT CHECKLISTS
+        $recentChecklists = Checklist::with([
+            'template.equipment.room.area',
+            'user',
+            'items'
+        ])
+            ->latest()
+            ->take(5)
+            ->get();
+
+            
+
         // Category chart
         $categories = Category::pluck('name');
         $faultByCategory = Category::withCount([
@@ -66,6 +89,24 @@ class DashboardController extends Controller
             }
         ])->pluck('fault_count');
 
+        $faultByCategoryToday = ChecklistItem::where('status', 'fault')
+            ->whereHas('checklist', function ($q) use ($today) {
+                $q->whereDate('created_at', $today);
+            })
+            ->whereHas('checklist.template.equipment.category')
+            ->with('checklist.template.equipment.category')
+            ->get()
+            ->groupBy(function ($item) {
+                return $item->checklist
+                    ->template
+                    ->equipment
+                    ->category
+                    ->name;
+            })
+            ->map(function ($group) {
+                return $group->count();
+            });
+
         return view('dashboard', compact(
             'totalEquipments',
             'checkedToday',
@@ -74,8 +115,11 @@ class DashboardController extends Controller
             'pendingCount',
             'categories',
             'faultByCategory',
+            'faultByCategoryToday',
             'recentFaults',
-            'todayChecklists'
+            'todayChecklists',
+            'recentChecklists',
+            'pendingTemplatesToday'
         ));
     }
 }

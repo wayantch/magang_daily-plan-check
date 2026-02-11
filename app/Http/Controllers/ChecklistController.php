@@ -22,6 +22,18 @@ class ChecklistController extends Controller
         return view('forms.index', compact('checklists'));
     }
 
+    public function adminIndex()
+    {
+        $checklists = Checklist::with([
+            'template.equipment.room.area',
+            'user'
+        ])
+            ->latest()
+            ->paginate(10);
+
+        return view('checklists.index', compact('checklists'));
+    }
+
     public function create(ChecklistTemplate $template)
     {
         $template->load('equipment.room.area', 'items');
