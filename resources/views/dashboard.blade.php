@@ -196,6 +196,10 @@
         </div>
 
     </div>
+    <div class="bg-card border border-border rounded-xl p-6 h-80 mt-5">
+        {{-- Calendar --}}
+        <div id="calendar"></div>
+    </div>
 
 
     {{-- ================= CHART ================= --}}
@@ -221,5 +225,7 @@
                 }
             }
         });
+
+        
     </script>
 @endsection

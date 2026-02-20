@@ -17,6 +17,7 @@
                 <table class="w-full text-sm">
                     <thead class="bg-bg border-b border-border">
                         <tr class="text-text-secondary">
+                            <th class="px-4 py-3 text-left">#</th>
                             <th class="px-4 py-3 text-left">Location & Equipment</th>
                             <th class="px-4 py-3 text-left">Template</th>
                             <th class="px-4 py-3 text-center">Status</th>
@@ -29,6 +30,10 @@
                     <tbody class="divide-y divide-border">
                         @forelse ($templates as $template)
                             <tr class="hover:bg-bg transition">
+                                {{-- No --}}
+                                <td class="px-4 py-3">
+                                    {{ $loop->iteration + ($templates->currentPage() - 1) * $templates->perPage() }}
+                                </td>
                                 {{-- Location --}}
                                 <td class="px-4 py-3">
                                     <div class="font-medium uppercase">
@@ -99,6 +104,16 @@
                                             class="p-2 rounded-lg text-text-secondary hover:bg-bg">
                                             <i data-lucide="eye" class="w-4 h-4"></i>
                                         </a>
+                                        {{-- Delete --}}
+                                        <form action="{{ route('checklist-templates.destroy', $template) }}"
+                                            method="post" class="inline-block">
+                                            @csrf
+                                            @method('delete')
+                                            <button type="submit"
+                                                class="p-2 rounded-lg text-text-secondary hover:bg-bg">
+                                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                            </button>
+                                        </form>
                                     </div>
                                 </td>
 

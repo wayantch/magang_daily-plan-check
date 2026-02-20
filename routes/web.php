@@ -10,6 +10,7 @@ use App\Http\Controllers\RoomController;
 use App\Http\Controllers\EquipmentController;
 use App\Http\Controllers\ChecklistController;
 use App\Http\Controllers\ChecklistTemplateController;
+use App\Http\Controllers\OpsChecklistController;
 use App\Http\Controllers\TypeController;
 
 /*
@@ -72,20 +73,13 @@ Route::middleware('auth')->group(function () {
     |--------------------------------------------------------------------------
     */
     Route::middleware('role:ops')->group(function () {
+        Route::prefix('ops')
+            ->name('ops.')
+            ->middleware(['auth']) // tambah role middleware kalau ada
+            ->group(function () {
 
-        // Home OPS (daftar tugas hari ini)
-        Route::get('/ops', [ChecklistController::class, 'opsHome'])
-            ->name('ops.home');
-
-        // Isi checklist
-        Route::get('/ops/checklists/{template}', [ChecklistController::class, 'create'])
-            ->name('ops.checklists.create');
-
-        Route::post('/ops/checklists/{template}', [ChecklistController::class, 'store'])
-            ->name('ops.checklists.store');
-
-        // History OPS
-        Route::get('/ops/history', [ChecklistController::class, 'myIndex'])
-            ->name('ops.checklists.history');
+                Route::resource('checklists', OpsChecklistController::class)
+                    ->only(['index', 'create', 'store']);
+            });
     });
 });

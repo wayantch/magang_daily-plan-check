@@ -14,16 +14,11 @@
 
     <div class="min-h-screen flex flex-col">
 
-        {{-- Topbar --}}
-        @include('components.ops.topbar')
-
         {{-- Content --}}
         <main class="flex-1 p-4 pb-24">
             @yield('content')
         </main>
 
-        {{-- Bottom Navigation --}}
-        {{-- @include('components.ops.bottom-nav') --}}
 
     </div>
 

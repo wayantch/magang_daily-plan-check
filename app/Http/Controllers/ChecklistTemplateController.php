@@ -124,4 +124,13 @@ class ChecklistTemplateController extends Controller
             ->route('checklist-templates.index')
             ->with('success', 'Checklist template updated');
     }
+
+    public function destroy(ChecklistTemplate $checklistTemplate)
+    {
+        $checklistTemplate->delete();
+
+        return redirect()
+            ->route('checklist-templates.index')
+            ->with('success', 'Checklist template deleted successfully');
+    }
 }
